@@ -185,15 +185,8 @@
 | **Total** | **$664/month** |
 
 
----
-
-## 📄 License
-
-MIT License - See [LICENSE](LICENSE)
-
----
 
 **Author:** Nikesh  
-**Last Updated:** February 4, 2026  
 **Version:** 1.0.0
+
 
