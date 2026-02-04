@@ -4,25 +4,25 @@
 [![.NET](https://img.shields.io/badge/.NET-8.0-512BD4)](https://dotnet.microsoft.com/)
 [![React](https://img.shields.io/badge/React-18-61DAFB)](https://reactjs.org/)
 
-> Autonomous multi-agent system for investigating and remediating orphaned/stale Non-Human Identity accounts across 237+ enterprise applications.
+> Autonomous multi-agent system for investigating and remediating orphaned/stale Non-Human Identity accounts across enterprise
 
 ## 🎯 Overview
 
-**Problem:** IAM teams manually investigate 2,000+ service accounts/month (2-6 weeks, 6+ FTEs, $62K/month)  
-**Solution:** AI agents automate 80% of investigations (2-3 days, 1 FTE, $664/month)  
-**Impact:** 99% cost reduction • 95% time savings • 7,807% ROI
+**Problem:** IAM teams manually investigate 2,000+ service/generic accounts to keep the organization compliant. With growing AI agents in the company adds overhead on top of this.
+**Solution:** AI agents automate 80% of investigations and the system can be handy with 'n' number of increase of AI agents in the future.  
+**Impact:** 99% cost reduction • 95% time savings 
 
 ---
 
 ## 🏗️ System Architecture
 ```
 ┌──────────────────────────────────────────────────────┐
-│         WEB INTERFACE (React + .NET 8)                │
-│  Select Application → Review → Approve/Reject         │
+│         WEB INTERFACE (React + .NET 8)               │
+│  Select Application → Review → Approve/Reject        │
 └──────────────────────────────────────────────────────┘
                        ↓
 ┌──────────────────────────────────────────────────────┐
-│              COORDINATOR AGENT                        │
+│              COORDINATOR AGENT                       │
 │  • Batch Processing: 500 accounts → 5×100            │
 │  • Event-Driven Orchestration (Service Bus)          │
 └──────────────────────────────────────────────────────┘
@@ -98,7 +98,7 @@
 
 | Source | Coverage | Confidence | Use Case |
 |--------|----------|------------|----------|
-| **PAM** (CyberArk) | 10-20% | ⭐⭐⭐⭐⭐ | Privileged accounts |
+| **PAM**  | 10-20% | ⭐⭐⭐⭐⭐ | Privileged accounts |
 | **SIEM** (Splunk/Sentinel) | 40-50% | ⭐⭐⭐⭐ | AD, Entra, UNIX logs |
 | **Direct Query** (SSH/PowerShell) | Variable | ⭐⭐⭐⭐ | Critical accounts |
 | **SailPoint + Context** | 40-50% | ⭐⭐⭐ | Legacy apps, trust IGA data |
@@ -184,97 +184,6 @@
 | **Storage & Monitoring** | $5 |
 | **Total** | **$664/month** |
 
-### ROI
-
-| Metric | Value |
-|--------|-------|
-| **Manual cost** | $62,500/month (6.25 FTEs) |
-| **Automated cost** | $664/month |
-| **Monthly savings** | $51,836 |
-| **Annual savings** | $622,032 |
-| **ROI** | 7,807% |
-| **Payback period** | 14 days |
-
----
-
-## 🚀 Quick Start
-
-### Prerequisites
-- Azure subscription
-- SailPoint IdentityIQ/IdentityNow
-- HR system API access (Workday/AD)
-- Optional: PAM, SIEM
-
-### Setup
-```bash
-# Clone repository
-git clone https://github.com/your-org/nhi-remediation-system.git
-cd nhi-remediation-system
-
-# Deploy infrastructure
-cd infrastructure
-terraform init
-terraform apply
-
-# Configure secrets
-az keyvault secret set --vault-name kv-nhi \
-  --name "SailPointApiKey" --value "your-key"
-
-# Deploy agents
-kubectl apply -f kubernetes/
-```
-
-### Configuration
-```json
-{
-  "DataSources": {
-    "SailPoint": { "ApiUrl": "https://tenant.identitynow.com", "Enabled": true },
-    "PAM": { "Type": "CyberArk", "Enabled": true },
-    "SIEM": { "Type": "Splunk", "Enabled": true }
-  },
-  "AgentConfiguration": {
-    "BatchSize": 100,
-    "ParallelInstances": 5,
-    "RetryAttempts": 3
-  }
-}
-```
-
----
-
-## 📝 Key Decisions
-
-| Decision | Rationale |
-|----------|-----------|
-| **Tiered data sources** | Can't verify 237 apps directly; PAM→SIEM→Direct→SailPoint |
-| **Trust SailPoint for 50%** | Leverage existing 237 connectors, add intelligence layer |
-| **Batch processing** | Resource efficiency, failure isolation |
-| **Event-driven** | Real-time coordination, horizontal scaling |
-| **On-demand LLM** | 95% cost savings vs always-on VMs |
-| **Orphaned ≠ Stale** | Different risks, different investigation strategies |
-| **No CMDB assumption** | Use alternative context (endpoint ping, tickets) |
-
----
-
-## 📚 Documentation
-
-- [Architecture Deep Dive](docs/architecture.md)
-- [Agent Specifications](docs/agents.md)
-- [Data Source Integration](docs/data-sources.md)
-- [Deployment Guide](docs/deployment.md)
-- [API Reference](docs/api.md)
-
----
-
-## 🗺️ Roadmap
-
-- [x] Core agent pipeline (A→B→C)
-- [x] SailPoint + HR + SIEM integration
-- [x] PAM integration (CyberArk)
-- [x] Web interface + audit trail
-- [ ] ML anomaly detection (Q2 2025)
-- [ ] Additional PAM vendors (Q3 2025)
-- [ ] Multi-tenancy (Q4 2025)
 
 ---
 
@@ -287,3 +196,4 @@ MIT License - See [LICENSE](LICENSE)
 **Author:** Nikesh  
 **Last Updated:** February 4, 2026  
 **Version:** 1.0.0
+
