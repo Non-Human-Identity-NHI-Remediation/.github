@@ -4,30 +4,16 @@
 [![.NET](https://img.shields.io/badge/.NET-8.0-512BD4)](https://dotnet.microsoft.com/)
 [![React](https://img.shields.io/badge/React-18-61DAFB)](https://reactjs.org/)
 
-> Autonomous multi-agent system for investigating and remediating orphaned/stale Non-Human Identity accounts across enterprise
+> Autonomous multi-agent system for investigating and remediating orphaned/stale Non-Human Identity accounts across enterprises.
 
 ## 🎯 Overview
 
-| | |
-|---|---|
-| **Problem** | IAM teams manually investigate 2,000+ service/generic accounts to keep the organization compliant. Growing adoption of AI agents adds overhead on top of this. |
-| **Solution** | AI agents automate 80% of investigations and the system scales to handle 'n' number of future AI agents. |
-| **Impact** | 99% cost reduction • 95% time savings |
 
----
+**Problem:**  IAM teams manually investigate 2,000+ service/generic accounts to keep the organization compliant. Growing adoption of AI agents adds overhead on top of this.
 
-## 🏗️ System Architecture
+**Solution:**  AI agents automate 80% of investigations and the system scales to handle 'n' number of future AI agents. 
 
-```mermaid
-graph TD
-    User[WEB INTERFACE] -->|Select App & Approve| Coord[COORDINATOR AGENT]
-    Coord -->|Batch: 100| A[AGENT A: Enrich]
-    A -->|3-Tier Check| DB[(Azure SQL)]
-    Coord -->|Trigger| B[AGENT B: Risk]
-    B -->|RAG Policy| DB
-    Coord -->|Trigger| C[AGENT C: Outreach]
-    C -->|Teams/Slack| Stakeholder((Stakeholder))
-```
+**Impact:**  99% cost reduction • 95% time savings. 
 
 ---
 
@@ -80,7 +66,7 @@ graph TD
 
 ---
 
-### Workflow
+### System Workflow
 
 | Aspect | Implementation |
 |--------|----------------|
@@ -206,3 +192,4 @@ graph TD
 
 **Author:** Nikesh  
 **Version:** 1.0.0
+
