@@ -4,16 +4,40 @@
 [![.NET](https://img.shields.io/badge/.NET-8.0-512BD4)](https://dotnet.microsoft.com/)
 [![React](https://img.shields.io/badge/React-18-61DAFB)](https://reactjs.org/)
 
-> Autonomous multi-agent system for investigating and remediating orphaned/stale Non-Human Identity accounts across enterprises.
+> Autonomous multi-agent system for investigating and remediating orphaned/stale Non-Human Identity accounts across enterprise.
 
 ## 🎯 Overview
 
+| | |
+|Context|Description|
+| **Problem** | IAM teams manually investigate 2,000+ service/generic accounts to keep the organization compliant. Growing adoption of AI agents adds overhead on top of this. |
+| **Solution** | AI agents automate 80% of investigations and the system scales to handle 'n' number of future AI agents. |
+| **Impact** | 99% cost reduction • 95% time savings |
 
-**Problem:**  IAM teams manually investigate 2,000+ service/generic accounts to keep the organization compliant. Growing adoption of AI agents adds overhead on top of this.
+---
 
-**Solution:**  AI agents automate 80% of investigations and the system scales to handle 'n' number of future AI agents. 
+## 🛡️ Safety & Governance (Human-in-the-Loop)
 
-**Impact:**  99% cost reduction • 95% time savings. 
+**Zero-Autonomous-Destruction Policy:**  
+To prevent operational outages, this system is designed as a **Decision Support Tool**, not an autonomous executioner.
+
+| Agent | Responsibility | Permissions |
+|:------|:---------------|:------|
+| **Agent A (Enrich)** | Gather technical facts & logs | **Read-Only** |
+| **Agent B (Risk)** | Cite policy violations & assign Risk Score | **Read-Only** |
+| **Agent C (Outreach)** | Negotiate with humans & capture business justification | **Read-Only** |
+| **Human Admin** | Review the AI "Case File" & Click Approve/Reject | **Read/Write (Destructive)** |
+
+**The "Case File" Approach:**  
+The system's goal is to present a conflicting scenario (e.g., *Technical Risk* vs. *Business Need*) to the IAM Engineer in a single view, reducing investigation time from **4 hours** to **30 seconds**.
+
+---
+
+## 🏗️ System Architecture
+
+![System Architecture](./docs/HLD.png)
+
+*Multi-agent system with A2A Protocol orchestration: Agent A (3-Tier Enrichment), Agent B (Multi-Agent RAG), and Agent C (Stakeholder Outreach via MCP)*
 
 ---
 
@@ -33,23 +57,25 @@
   - IdP: Check for TGT requests (Authentication vs Logon)
   - Config: Is it an SPN or gMSA?
 
-**Output:** Activity Confidence Level + Ownership Context
-
-**LLM:** Phi-4 (local) OR GPT-4o (cloud)
+**Output:** Activity Confidence Level + Ownership Context  
+**LLM:** Phi-4 (local)
 
 ---
 
-#### Agent B: Risk Evaluation Agent
+#### Agent B: Risk Evaluation Team (Multi-Agent RAG)
 
-**Task:** Assess risk using compliance policies.
+**Task:** Autonomous, hallucination-free compliance auditing.
 
-**Process:**
-- **RAG:** Query Vector Store (HIPAA, SOX, GDPR policies)
-- **LLM reasoning:** Calculate Risk Score based on Activity Tier + Data Sensitivity
+**Architecture:** Leader-Worker Pattern
 
-**Output:** `Disable` / `Transfer` / `Keep` / `Escalate`
+| Agent | Role |
+|-------|------|
+| **Librarian** | Dedicated to querying the Vector Store. Breaks down account context ("Finance", "Privileged") into search terms and retrieves relevant policy chunks (ISO, NIST, Internal Standards). |
+| **Fact-Checker** | A critical "Guardrail" agent. Takes the Librarian's chunks and cross-references them to ensure citations are real. |
+| **Writer** | Formats the verified facts into a structured Risk Analysis Report for the Web Interface. |
 
-**LLM:** GPT-4o/Claude (complex reasoning)
+**Output:** A cited, verified Risk Score (e.g., "Violation: Clause 4.2 of Policy X")  
+**LLM:** GPT-4o (required for complex verification)
 
 ---
 
@@ -62,11 +88,11 @@
 - Track responses, handle escalations (7-day timeout)
 - Update web interface with approval status
 
-**LLM:** Phi-4 (local) OR GPT-4o
+**LLM:** Phi-4 (local)
 
 ---
 
-### System Workflow
+### Workflow
 
 | Aspect | Implementation |
 |--------|----------------|
@@ -94,7 +120,7 @@
 
 ## 📊 Data Sources
 
-### The 3-Tier Reliability Model
+### The 3-Tier Reliability Model (Agent A)
 
 | Tier | Source | Logic | Use Case |
 |------|--------|-------|----------|
@@ -128,28 +154,25 @@
                     ↓
 4. Agent A: Publish "agent_a_complete" events (×5)
                     ↓
-5. Coordinator: Verify 493 processed
-   └─ Retry failed accounts (3×) → DLQ
+5. Coordinator: Trigger Agent B (Risk Team)
                     ↓
-6. Coordinator: Trigger Agent B with 493 accounts
+6. Agent B Internal Workflow (Multi-Agent RAG):
+   ├─ Librarian: Retrieves "Password Policy 2025" & "Service Account Standard"
+   ├─ Fact-Checker: "Verification Pass: Policy requires 90-day rotation.
+   │                  Account age is 400 days. CONFIRMED."
+   └─ Writer: Generates formatted JSON for Web UI
                     ↓
-7. Agent B (5 instances): Risk evaluation
-   ├─ RAG: Query Vector Store for policies
-   └─ LLM: Risk score + recommendation
+7. Agent B: Publish "agent_b_complete" events
                     ↓
-8. Agent B: Publish "agent_b_complete" events
+8. Coordinator: Trigger Agent C
                     ↓
-9. Coordinator: Trigger Agent C
+9. Agent C (5 instances): Stakeholder outreach
+   ├─ Send Teams messages with findings
+   └─ Track approvals: 350 approved, 80 pending
                     ↓
-10. Agent C (5 instances): Stakeholder outreach
-    ├─ Send Teams messages with findings
-    └─ Track approvals: 350 approved, 80 pending
+10. IAM team: Approve 350 → Trigger IGA workflow
                     ↓
-11. After 7 days: Escalate 80 pending to managers
-                    ↓
-12. IAM team: Approve 350 → Trigger IGA workflow
-                    ↓
-13. IGA: Disable accounts + Create SNOW tickets
+11. IGA: Disable accounts + Create SNOW tickets
 ```
 
 ---
@@ -162,7 +185,8 @@
 | Backend | C# .NET 8 |
 | Frontend | React 18 + Tailwind CSS |
 | LLM | Phi-4 (local), GPT-4o, Claude Sonnet |
-| Vector Store | Azure AI Search (RAG) |
+| Vector Store | Azure AI Search (Hybrid Search) |
+| Agentic Framework | Semantic Kernel / Microsoft Agents |
 | State | Azure SQL (Serverless) |
 | Events | Azure Service Bus |
 | Compute | Azure Kubernetes Service (Spot instances) |
@@ -192,4 +216,5 @@
 
 **Author:** Nikesh  
 **Version:** 1.0.0
+
 
