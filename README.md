@@ -33,14 +33,6 @@ The system's goal is to present a conflicting scenario (e.g., *Technical Risk* v
 
 ---
 
-## 🏗️ High Level Design
-
-![System Architecture](./docs/HLD.png)
-
-*Multi-agent system with A2A Protocol orchestration: Agent A (3-Tier Enrichment), Agent B (Multi-Agent RAG), and Agent C (Stakeholder Outreach via MCP)*
-
----
-
 ## 📋 Requirements
 
 ### Functional
@@ -57,25 +49,23 @@ The system's goal is to present a conflicting scenario (e.g., *Technical Risk* v
   - IdP: Check for TGT requests (Authentication vs Logon)
   - Config: Is it an SPN or gMSA?
 
-**Output:** Activity Confidence Level + Ownership Context  
-**LLM:** Phi-4 (local)
+**Output:** Activity Confidence Level + Ownership Context
+
+**LLM:** Phi-4 (local) OR GPT-4o (cloud)
 
 ---
 
-#### Agent B: Risk Evaluation Team (Multi-Agent RAG)
+#### Agent B: Risk Evaluation Agent
 
-**Task:** Autonomous, hallucination-free compliance auditing.
+**Task:** Assess risk using compliance policies.
 
-**Architecture:** Leader-Worker Pattern
+**Process:**
+- **RAG:** Query Vector Store (HIPAA, SOX, GDPR policies)
+- **LLM reasoning:** Calculate Risk Score based on Activity Tier + Data Sensitivity
 
-| Agent | Role |
-|-------|------|
-| **Librarian** | Dedicated to querying the Vector Store. Breaks down account context ("Finance", "Privileged") into search terms and retrieves relevant policy chunks (ISO, NIST, Internal Standards). |
-| **Fact-Checker** | A critical "Guardrail" agent. Takes the Librarian's chunks and cross-references them to ensure citations are real. |
-| **Writer** | Formats the verified facts into a structured Risk Analysis Report for the Web Interface. |
+**Output:** `Disable` / `Transfer` / `Keep` / `Escalate`
 
-**Output:** A cited, verified Risk Score (e.g., "Violation: Clause 4.2 of Policy X")  
-**LLM:** GPT-4o (required for complex verification)
+**LLM:** GPT-4o/Claude (complex reasoning)
 
 ---
 
@@ -88,11 +78,19 @@ The system's goal is to present a conflicting scenario (e.g., *Technical Risk* v
 - Track responses, handle escalations (7-day timeout)
 - Update web interface with approval status
 
-**LLM:** Phi-4 (local)
+**LLM:** Phi-4 (local) OR GPT-4o
 
 ---
 
-### Workflow
+## 🏗️ High Level Design
+
+![System Architecture](./docs/HLD.png)
+
+*Multi-agent system with A2A Protocol orchestration: Agent A (3-Tier Enrichment), Agent B (Multi-Agent RAG), and Agent C (Stakeholder Outreach via MCP)*
+
+---
+
+### System Workflow
 
 | Aspect | Implementation |
 |--------|----------------|
@@ -120,7 +118,7 @@ The system's goal is to present a conflicting scenario (e.g., *Technical Risk* v
 
 ## 📊 Data Sources
 
-### The 3-Tier Reliability Model (Agent A)
+### The 3-Tier Reliability Model
 
 | Tier | Source | Logic | Use Case |
 |------|--------|-------|----------|
@@ -154,25 +152,28 @@ The system's goal is to present a conflicting scenario (e.g., *Technical Risk* v
                     ↓
 4. Agent A: Publish "agent_a_complete" events (×5)
                     ↓
-5. Coordinator: Trigger Agent B (Risk Team)
+5. Coordinator: Verify 493 processed
+   └─ Retry failed accounts (3×) → DLQ
                     ↓
-6. Agent B Internal Workflow (Multi-Agent RAG):
-   ├─ Librarian: Retrieves "Password Policy 2025" & "Service Account Standard"
-   ├─ Fact-Checker: "Verification Pass: Policy requires 90-day rotation.
-   │                  Account age is 400 days. CONFIRMED."
-   └─ Writer: Generates formatted JSON for Web UI
+6. Coordinator: Trigger Agent B with 493 accounts
                     ↓
-7. Agent B: Publish "agent_b_complete" events
+7. Agent B (5 instances): Risk evaluation
+   ├─ RAG: Query Vector Store for policies
+   └─ LLM: Risk score + recommendation
                     ↓
-8. Coordinator: Trigger Agent C
+8. Agent B: Publish "agent_b_complete" events
                     ↓
-9. Agent C (5 instances): Stakeholder outreach
-   ├─ Send Teams messages with findings
-   └─ Track approvals: 350 approved, 80 pending
+9. Coordinator: Trigger Agent C
                     ↓
-10. IAM team: Approve 350 → Trigger IGA workflow
+10. Agent C (5 instances): Stakeholder outreach
+    ├─ Send Teams messages with findings
+    └─ Track approvals: 350 approved, 80 pending
                     ↓
-11. IGA: Disable accounts + Create SNOW tickets
+11. After 7 days: Escalate 80 pending to managers
+                    ↓
+12. IAM team: Approve 350 → Trigger IGA workflow
+                    ↓
+13. IGA: Disable accounts + Create SNOW tickets
 ```
 
 ---
@@ -185,8 +186,7 @@ The system's goal is to present a conflicting scenario (e.g., *Technical Risk* v
 | Backend | C# .NET 8 |
 | Frontend | React 18 + Tailwind CSS |
 | LLM | Phi-4 (local), GPT-4o, Claude Sonnet |
-| Vector Store | Azure AI Search (Hybrid Search) |
-| Agentic Framework | Semantic Kernel / Microsoft Agents |
+| Vector Store | Azure AI Search (RAG) |
 | State | Azure SQL (Serverless) |
 | Events | Azure Service Bus |
 | Compute | Azure Kubernetes Service (Spot instances) |
