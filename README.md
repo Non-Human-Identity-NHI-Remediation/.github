@@ -8,8 +8,8 @@
 
 ## 🎯 Overview
 
-| | |
-|Context|Description|
+| Context|Description |
+|----|----|
 | **Problem** | IAM teams manually investigate 2,000+ service/generic accounts to keep the organization compliant. Growing adoption of AI agents adds overhead on top of this. |
 | **Solution** | AI agents automate 80% of investigations and the system scales to handle 'n' number of future AI agents. |
 | **Impact** | 99% cost reduction • 95% time savings |
@@ -33,7 +33,7 @@ The system's goal is to present a conflicting scenario (e.g., *Technical Risk* v
 
 ---
 
-## 🏗️ System Architecture
+## 🏗️ High Level Design
 
 ![System Architecture](./docs/HLD.png)
 
@@ -216,5 +216,6 @@ The system's goal is to present a conflicting scenario (e.g., *Technical Risk* v
 
 **Author:** Nikesh  
 **Version:** 1.0.0
+
 
 
