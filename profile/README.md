@@ -4,16 +4,32 @@
 [![.NET](https://img.shields.io/badge/.NET-8.0-512BD4)](https://dotnet.microsoft.com/)
 [![React](https://img.shields.io/badge/React-18-61DAFB)](https://reactjs.org/)
 
-> Autonomous multi-agent system for investigating and remediating orphaned/stale Non-Human Identity accounts across enterprises.
+> Autonomous multi-agent system for investigating and remediating orphaned/stale Non-Human Identity accounts across enterprise.
 
 ## 🎯 Overview
 
+| Context|Description |
+|----|----|
+| **Problem** | IAM teams manually investigate 2,000+ service/generic accounts to keep the organization compliant. Growing adoption of AI agents adds overhead on top of this. |
+| **Solution** | AI agents automate 80% of investigations and the system scales to handle 'n' number of future AI agents. |
+| **Impact** | 99% cost reduction • 95% time savings |
 
-**Problem:**  IAM teams manually investigate 2,000+ service/generic accounts to keep the organization compliant. Growing adoption of AI agents adds overhead on top of this.
+---
 
-**Solution:**  AI agents automate 80% of investigations and the system scales to handle 'n' number of future AI agents. 
+## 🛡️ Safety & Governance (Human-in-the-Loop)
 
-**Impact:**  99% cost reduction • 95% time savings. 
+**Zero-Autonomous-Destruction Policy:**  
+To prevent operational outages, this system is designed as a **Decision Support Tool**, not an autonomous executioner.
+
+| Agent | Responsibility | Permissions |
+|:------|:---------------|:------|
+| **Agent A (Enrich)** | Gather technical facts & logs | **Read-Only** |
+| **Agent B (Risk)** | Cite policy violations & assign Risk Score | **Read-Only** |
+| **Agent C (Outreach)** | Negotiate with humans & capture business justification | **Read-Only** |
+| **Human Admin** | Review the AI "Case File" & Click Approve/Reject | **Read/Write (Destructive)** |
+
+**The "Case File" Approach:**  
+The system's goal is to present a conflicting scenario (e.g., *Technical Risk* vs. *Business Need*) to the IAM Engineer in a single view, reducing investigation time from **4 hours** to **30 seconds**.
 
 ---
 
@@ -63,6 +79,14 @@
 - Update web interface with approval status
 
 **LLM:** Phi-4 (local) OR GPT-4o
+
+---
+
+## 🏗️ High Level Design
+
+![System Architecture](./docs/HLD.png)
+
+*Multi-agent system with A2A Protocol orchestration: Agent A (3-Tier Enrichment), Agent B (Multi-Agent RAG), and Agent C (Stakeholder Outreach via MCP)*
 
 ---
 
@@ -192,3 +216,5 @@
 
 **Author:** Nikesh  
 **Version:** 1.0.0
+
+
