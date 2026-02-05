@@ -84,7 +84,7 @@ The system's goal is to present a conflicting scenario (e.g., *Technical Risk* v
 
 ## 🏗️ High Level Design
 
-![System Architecture](./docs/HLD.png)
+![System Architecture](./docs/HLD1.png)
 
 *Multi-agent system with A2A Protocol orchestration: Agent A (3-Tier Enrichment), Agent B (Multi-Agent RAG), and Agent C (Stakeholder Outreach via MCP)*
 
@@ -216,6 +216,7 @@ The system's goal is to present a conflicting scenario (e.g., *Technical Risk* v
 
 **Author:** Nikesh  
 **Version:** 1.0.0
+
 
 
 
